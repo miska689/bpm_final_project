@@ -64,6 +64,9 @@ architecture Behavioral of bpm_fsm is
     signal pulse_fall, pulse_rise : std_logic;
     
     signal score : std_logic_vector(15 downto 0);
+    signal an : std_logic_vector(3 downto 0);
+    signal seg : std_logic_vector(0 to 6);
+    signal dp_out : std_logic;
 begin
    process(clk, reset)
    begin
@@ -110,6 +113,16 @@ begin
         done => done
     );
     
+    UUT3: driver7seg port map (
+        clk => clk,
+        Din => score,
+        an => an,
+        seg => seg,
+        dp_in => (others => '0'),
+        dp_out => dp_out,
+        rst => reset
+    );
+    
 
     -- FSM next state logic
     process(current_state, pulse_rise, pulse_fall, done)
@@ -140,11 +153,7 @@ begin
                 next_state <= WAIT_RESET;
 
             when WAIT_RESET =>
-                if pulse_fall = '1' then
-                    next_state <= MEASURE;
-                else
-                    next_state <= IDLE;
-                end if;
+                null;
                     
             when others =>
                 next_state <= IDLE;
