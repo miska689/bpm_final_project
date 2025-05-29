@@ -77,20 +77,18 @@ begin
     pulse_process: process
     begin
       wait for 100 ms;
-      -- primul click
-      pulse_in <= '1'; wait for CLK_PERIOD;
-      pulse_in <= '0'; wait for CLK_PERIOD;
-      -- al doilea click după 500 ms
-      wait for 500 ms;
-      pulse_in <= '1'; wait for CLK_PERIOD;
-      pulse_in <= '0'; wait for CLK_PERIOD;
-      wait for 300ms;
-      pulse_in <= '1'; wait for CLK_PERIOD;
-      pulse_in <= '0'; wait for CLK_PERIOD;
-      -- al doilea click după 500 ms
-      wait for 750 ms;
-      pulse_in <= '1'; wait for CLK_PERIOD;
-      pulse_in <= '0'; wait for CLK_PERIOD;
+      pulse_in <= '1'; wait for 10ms;
+      pulse_in <= '0'; wait for 500ms;
+      
+      pulse_in <= '1'; wait for 10ms;
+      pulse_in <= '0'; wait for 300ms;
+      
+      
+      pulse_in <= '1'; wait for 10ms;
+      pulse_in <= '0'; wait for 750 ms;
+      
+      pulse_in <= '1'; wait for 10ms;
+      pulse_in <= '0';
       wait;
     end process; 
 end Behavioral;
