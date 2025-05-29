@@ -52,6 +52,15 @@ architecture Behavioral of bpm_fsm is
         );
     end component driver7seg; 
     
+    component debounce is
+        Port (
+            clk       : in  std_logic;
+            rst       : in  std_logic;
+            btn_raw   : in  std_logic;
+            btn_clean : out std_logic
+        );
+    end component debounce;
+    
     signal current_state, next_state : state_type;
     
     signal counting    : std_logic := '0';
@@ -59,44 +68,15 @@ architecture Behavioral of bpm_fsm is
     signal enable      : std_logic := '0';
     signal bpm_out     : unsigned(13 downto 0);
     signal done        : std_logic;
-    signal pulse_in_d : std_logic;
     
-    signal pulse_fall, pulse_rise : std_logic;
+    signal pulse_signal : std_logic;
+    signal pulse_in_d, pulse_fall, pulse_rise : std_logic;
     
     signal score : std_logic_vector(15 downto 0);
     signal an : std_logic_vector(3 downto 0);
     signal seg : std_logic_vector(0 to 6);
     signal dp_out : std_logic;
 begin
-   process(clk, reset)
-   begin
-       if reset = '1' then
-            pulse_in_d  <= '0';
-            pulse_rise  <= '0';
-            pulse_fall  <= '0';
-       elsif rising_edge(clk) then
-            pulse_rise  <= pulse_in and not pulse_in_d;
-            pulse_fall  <= not pulse_in and pulse_in_d;
-            pulse_in_d  <= pulse_in;
-       end if;
-    end process;
-    
-    process(clk, reset)
-    begin
-        if reset = '1' then
-            current_state <= IDLE;
-        elsif rising_edge(clk) then
-            current_state <= next_state;
-        end if;
-    end process;
-    
-    process(clk)
-    begin
-        if rising_edge(clk) then
-            pulse_in_d <= pulse_in;
-        end if;
-    end process;
-    
     UUT1: counter_ms port map(
         clk         => clk,
         reset       => reset,
@@ -122,6 +102,43 @@ begin
         dp_out => dp_out,
         rst => reset
     );
+    
+    UUT4_pulse_button: debounce port map(
+        clk => clk,
+        rst => reset,
+        btn_raw => pulse_in,
+        btn_clean => pulse_signal
+    ); 
+
+    process(clk, reset)
+    begin
+       if reset = '1' then
+            pulse_in_d  <= '0';
+            pulse_rise  <= '0';
+            pulse_fall  <= '0';
+       elsif rising_edge(clk) then
+            pulse_rise  <= pulse_signal and not pulse_in_d;
+            pulse_fall  <= not pulse_signal and pulse_in_d;
+            pulse_in_d  <= pulse_signal;
+       end if;
+    end process;
+    
+    process(clk, reset)
+    begin
+        if reset = '1' then
+            current_state <= IDLE;
+        elsif rising_edge(clk) then
+            current_state <= next_state;
+        end if;
+    end process;
+    
+    process(clk)
+    begin
+        if rising_edge(clk) then
+            pulse_in_d <= pulse_signal;
+        end if;
+    end process;
+    
     
 
     -- FSM next state logic
