@@ -12,7 +12,7 @@ entity debounce is
 end debounce;
 
 architecture Behavioral of debounce is
-    constant DEBOUNCE_TIME : integer := 500000; -- 10ms @ 50MHz
+    constant DEBOUNCE_TIME : integer := 1; -- 10ms @ 50MHz
     signal counter         : integer range 0 to DEBOUNCE_TIME := 0;
     signal btn_sync_0      : std_logic := '0';
     signal btn_sync_1      : std_logic := '0';
