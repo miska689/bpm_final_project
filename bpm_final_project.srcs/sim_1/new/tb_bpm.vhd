@@ -59,7 +59,11 @@ begin
       reset <= '1';
       wait for 2*CLK_PERIOD;
       reset <= '0';
-      wait;  -- restul simulării
+      wait for 650ms;
+      reset <= '1';
+      wait for 10ms;
+      reset <= '0';
+      wait;
     end process;
 
     clk_process: process
@@ -72,12 +76,19 @@ begin
     
     pulse_process: process
     begin
-        wait for 100 ms;
+      wait for 100 ms;
       -- primul click
       pulse_in <= '1'; wait for CLK_PERIOD;
       pulse_in <= '0'; wait for CLK_PERIOD;
       -- al doilea click după 500 ms
       wait for 500 ms;
+      pulse_in <= '1'; wait for CLK_PERIOD;
+      pulse_in <= '0'; wait for CLK_PERIOD;
+      wait for 300ms;
+      pulse_in <= '1'; wait for CLK_PERIOD;
+      pulse_in <= '0'; wait for CLK_PERIOD;
+      -- al doilea click după 500 ms
+      wait for 750 ms;
       pulse_in <= '1'; wait for CLK_PERIOD;
       pulse_in <= '0'; wait for CLK_PERIOD;
       wait;
